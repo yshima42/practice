@@ -11,18 +11,6 @@
 #define SERVER_ADDR     "127.0.0.1"
 #define SERVER_PORT     12345
 
-void sendmessage(int s) {
-	char buf[1024];
-
-	while (fgets(buf, sizeof(buf), stdin) != NULL) {
-		if (write(s, buf, strlen(buf)) == -1) {
-			fprintf(stderr, "send error\n");
-			return ;
-		}
-	}
-	clearerr(stdin);
-}
-
 int main(void) {
     int s, cc;
     struct sockaddr_in sa;
@@ -48,9 +36,6 @@ int main(void) {
         exit(1);
     }
     fprintf(stderr, "Connected.\n");
-
-	write(s, "hello\n", 6);
-	sendmessage(s);
 
 
     /* サーバから通信文を受け取って画面に表示する */

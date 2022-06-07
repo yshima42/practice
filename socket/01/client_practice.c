@@ -9,7 +9,7 @@
 #include <unistd.h>     /* close, read, write */
 
 #define SERVER_ADDR     "127.0.0.1"
-#define SERVER_PORT     12345
+#define SERVER_PORT     8080
 
 void sendmessage(int s) {
 	char buf[1024];

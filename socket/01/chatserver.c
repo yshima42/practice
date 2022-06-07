@@ -90,5 +90,37 @@ int main(void)
 				maxfd = clients[i];
 		}
 
-}
+		if (select(maxfd + 1, &readfds, NULL, NULL, NULL) < 0) {
+			perror("select");
+			exit(1);
+		}
 
+		if (FD_ISSET(s, &readfds)) {
+			struct sockaddr_in ca;
+			socklen_t ca_len;
+			int ws;
+
+			ca_len = sizeof(ca);
+			if ((ws = accept(s, (struct sockaddr *)&ca, &ca_len)) == -1) {
+				perror("accept");
+				continue;
+			}
+			if (nclients >= MAXNCLIENTS) {
+				sorry(ws);
+				shutdown(ws, SHUT_RDWR);
+				close(ws);
+				fprintf(stderr, "Refused a new connection.\n");
+			} else {
+				clients[nclients] = ws;
+				nclients++;
+				fprintf(stderr, "Accepted a connection on descriptor %d.\n", ws);
+			}
+		}
+		for (i = 0; i < nclients; i++) {
+			if (FD_ISSET(clients[i], &readfds)) {
+				talks(clients[i]);
+				break;
+			}
+		}
+	}
+}
