@@ -110,7 +110,7 @@ int SendRecvLoop(int soc)
 						break;
 					}
 					buf[len] = '\0';
-					printf("> $s", buf);
+					printf("> %s", buf);
 				}
 		}
 		if (error) {

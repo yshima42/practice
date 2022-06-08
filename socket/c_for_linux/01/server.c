@@ -13,7 +13,6 @@
 #include <netdb.h>
 #include <sys/wait.h>
 
-
 int ServerSocket(char *portnm)
 {
 	int soc, portno, opt;
@@ -67,31 +66,6 @@ int ServerSocket(char *portnm)
 	return (soc);
 }
 
-int AcceptLoop(int soc)
-{
-	int acc;
-	socklen_t len;
-	struct sockaddr_in from;
-
-	while (1) {
-		len = sizeof(from);
-
-		acc = accept(soc, (struct sockaddr *)&from, &len);
-		if (acc < 0) {
-			if (errno != EINTR) {
-				perror("accept");
-			}
-		} else {
-			fprintf(stderr, "accept:%s:%d\n", inet_ntoa(from.sin_addr), ntohs(from.sin_port));
-			//sendRecvLoop(acc);
-
-			close(acc);
-			acc = 0;
-		}
-	}
-	return (0);
-}
-
 int SendRecvLoop(int acc)
 {
 	char buf[512], *ptr;
@@ -123,6 +97,31 @@ int SendRecvLoop(int acc)
 		}
 	}
 	return 0;
+}
+
+int AcceptLoop(int soc)
+{
+	int acc;
+	socklen_t len;
+	struct sockaddr_in from;
+
+	while (1) {
+		len = sizeof(from);
+
+		acc = accept(soc, (struct sockaddr *)&from, &len);
+		if (acc < 0) {
+			if (errno != EINTR) {
+				perror("accept");
+			}
+		} else {
+			fprintf(stderr, "accept:%s:%d\n", inet_ntoa(from.sin_addr), ntohs(from.sin_port));
+			SendRecvLoop(acc);
+
+			close(acc);
+			acc = 0;
+		}
+	}
+	return (0);
 }
 
 int main(int argc, char *argv[])
